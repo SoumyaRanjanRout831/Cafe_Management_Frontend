@@ -13,9 +13,8 @@ import { GlobalConstant } from '../shared/global-constant';
   styleUrls: ['./signup.component.scss'],
 })
 export class SignupComponent implements OnInit {
-
   signupForm: any = FormGroup;
-  responseMessage: any ;
+  responseMessage: any;
   hide = true;
   constructor(
     private formBuilder: FormBuilder,
@@ -28,40 +27,55 @@ export class SignupComponent implements OnInit {
 
   ngOnInit(): void {
     this.signupForm = this.formBuilder.group({
-      name: [null, [Validators.required, Validators.pattern(GlobalConstant.nameRegex)]],
-      email: [null, [Validators.required, Validators.pattern(GlobalConstant.emailRegex)]],
-      contactNumber: [null, [Validators.required, Validators.pattern(GlobalConstant.contactNumberRegex)]],
-      password: [null, [Validators.required]]
-    })
+      name: [
+        null,
+        [Validators.required, Validators.pattern(GlobalConstant.nameRegex)],
+      ],
+      email: [
+        null,
+        [Validators.required, Validators.pattern(GlobalConstant.emailRegex)],
+      ],
+      contactNumber: [
+        null,
+        [
+          Validators.required,
+          Validators.pattern(GlobalConstant.contactNumberRegex),
+        ],
+      ],
+      password: [null, [Validators.required]],
+    });
   }
 
-  handleSubmit(){
+  handleSubmit() {
     this.ngxService.start();
     let formData = this.signupForm.value;
     let data = {
       name: formData.name,
       email: formData.email,
       contactNumber: formData.contactNumber,
-      password: formData.password
-    }
-    this.user.signUp(data).subscribe((res: any)=>{
-      this.ngxService.stop();
-      this.dialogRef.close();
-      this.responseMessage = res.message;
-      this.snackbarService.openSnackBar(this.responseMessage, '');
-      this.router.navigate(['/']);
+      password: formData.password,
+    };
+    this.user.signUp(data).subscribe(
+      (res: any) => {
+        this.ngxService.stop();
+        this.dialogRef.close();
+        this.responseMessage = res.message;
+        this.snackbarService.openSnackBar(this.responseMessage, '');
+        this.router.navigate(['/']);
+      },
+      (err) => {
+        this.ngxService.stop();
 
-    }, (err) =>{
-      this.ngxService.stop();
-
- if(err.error?.message){
-  this.responseMessage = err.error?.message;
-
- }else {
-  this.responseMessage = GlobalConstant.genericError;
- }
- this.snackbarService.openSnackBar(this.responseMessage, GlobalConstant.error)
-      
-    })
+        if (err.error?.message) {
+          this.responseMessage = err.error?.message;
+        } else {
+          this.responseMessage = GlobalConstant.genericError;
+        }
+        this.snackbarService.openSnackBar(
+          this.responseMessage,
+          GlobalConstant.error
+        );
+      }
+    );
   }
 }
