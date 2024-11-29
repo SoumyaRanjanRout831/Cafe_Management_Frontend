@@ -42,4 +42,8 @@ export class UserService {
       headers: this.headers,
     });
   }
+
+  checkToken(){
+    return this.httpClient.get(`${this.url}/user/checkToken`);
+  }
 }
